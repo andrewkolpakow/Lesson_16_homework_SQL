@@ -5,6 +5,7 @@ import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:" #БД хранится не в проекте, а в памяти, можно указать db_test.db
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app) #Связали БД с приложением
 
@@ -234,52 +235,53 @@ def offer(uid: int):
 
 #-------------------init database-----------------
 def init_database():
-    db.drop_all()
-    db.create_all()
-    '''Clear database, create database'''
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+        '''Clear database, create database'''
 
-    for user_data in raw_data.users:
-        new_user = User(
-            id=user_data["id"],
-            first_name=user_data["first_name"],
-            last_name=user_data["last_name"],
-            age=user_data["age"],
-            email=user_data["email"],
-            role=user_data["role"],
-            phone=user_data["phone"],
-        )
+        for user_data in raw_data.users:
+            new_user = db.User(
+                id=user_data["id"],
+                first_name=user_data["first_name"],
+                last_name=user_data["last_name"],
+                age=user_data["age"],
+                email=user_data["email"],
+                role=user_data["role"],
+                phone=user_data["phone"],
+            )
 
-        db.session.add(new_user)
-        db.session.commit()
-    '''Add users to database'''
+            db.session.add(new_user)
+            db.session.commit()
+        '''Add users to database'''
 
-    for order_data in raw_data.orders:
-        new_order = Order(
-            id=order_data["id"],
-            name=order_data["name"],
-            description=order_data["description"],
-            start_date=order_data["start_date"],
-            end_date=order_data["email"],
-            address=order_data["role"],
-            price=order_data["phone"],
-            customer_id=order_data["customer_id"],
-            executor_id=order_data["executor_id"],
-        )
+        for order_data in raw_data.orders:
+            new_order = db.Order(
+                id=order_data["id"],
+                name=order_data["name"],
+                description=order_data["description"],
+                start_date=order_data["start_date"],
+                end_date=order_data["end_date"],
+                address=order_data["address"],
+                price=order_data["price"],
+                customer_id=order_data["customer_id"],
+                executor_id=order_data["executor_id"],
+            )
 
-        db.session.add(new_order)
-        db.session.commit()
-    '''Add order to order table'''
+            db.session.add(new_order)
+            db.session.commit()
+        '''Add order to order table'''
 
-    for offer_data in raw_data.offers:
-        new_offer = Offer(
-            id=offer_data["id"],
-            customer_id=offer_data["customer_id"],
-            executor_id=offer_data["executor_id"]
-        )
+        for offer_data in raw_data.offers:
+            new_offer = db.Offer(
+                id=offer_data["id"],
+                customer_id=offer_data["customer_id"],
+                executor_id=offer_data["executor_id"]
+            )
 
-        db.session.add(new_offer)
-        db.session.commit()
-    '''Add offers to offer table'''
+            db.session.add(new_offer)
+            db.session.commit()
+        '''Add offers to offer table'''
 
 if __name__ == '__main__':
     init_database()
