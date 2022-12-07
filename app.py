@@ -275,7 +275,7 @@ def init_database():
         for offer_data in raw_data.offers:
             new_offer = Offer(
                 id=offer_data["id"],
-                customer_id=offer_data["customer_id"],
+                order_id=offer_data["order_id"],
                 executor_id=offer_data["executor_id"]
             )
 
