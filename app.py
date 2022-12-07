@@ -62,7 +62,7 @@ class Order(db.Model):
 class Offer(db.Model):
     __tablename__ = "offer"
     id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    order_id = db.Column(db.Integer, db.ForeignKey("order.id"))
     executor_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
     def to_dict(self):
@@ -241,7 +241,7 @@ def init_database():
         '''Clear database, create database'''
 
         for user_data in raw_data.users:
-            new_user = db.User(
+            new_user = User(
                 id=user_data["id"],
                 first_name=user_data["first_name"],
                 last_name=user_data["last_name"],
@@ -256,7 +256,7 @@ def init_database():
         '''Add users to database'''
 
         for order_data in raw_data.orders:
-            new_order = db.Order(
+            new_order = Order(
                 id=order_data["id"],
                 name=order_data["name"],
                 description=order_data["description"],
@@ -273,7 +273,7 @@ def init_database():
         '''Add order to order table'''
 
         for offer_data in raw_data.offers:
-            new_offer = db.Offer(
+            new_offer = Offer(
                 id=offer_data["id"],
                 customer_id=offer_data["customer_id"],
                 executor_id=offer_data["executor_id"]
@@ -286,3 +286,4 @@ def init_database():
 if __name__ == '__main__':
     init_database()
     app.run(debug=True)
+
